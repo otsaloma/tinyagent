@@ -15,7 +15,7 @@ Install uv required by the Python environment, see
 Install Playwright required by the fetch tool.
 
 ```bash
-uv run playwright install
+uv run playwright install webkit
 ```
 
 ## Command Line Interface
