@@ -1,4 +1,37 @@
 # -*- coding: utf-8 -*-
 
-if __name__ == "__main__":
-    print("Hello!")
+import json
+
+from pydantic import BaseModel
+from typing import Callable
+
+class Signature(BaseModel):
+    pass
+
+class Tool:
+
+    name: str
+    description: str
+    function: Callable
+    signature: type[Signature]
+
+    def call(self, **kwargs):
+        # When assigned, self.function becomes a bound method.
+        # Extract the plain function to avoid calling with self.
+        function = self.function.__func__
+        validated = self.signature(**kwargs)
+        return function(**validated.model_dump())
+
+    @property
+    def schema(self) -> dict:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "parameters": self.signature.model_json_schema(),
+        }
+
+    @property
+    def schema_json(self, **kwargs) -> str:
+        kwargs.setdefault("ensure_ascii", False)
+        kwargs.setdefault("indent", 2)
+        return json.dumps(self.schema, **kwargs)

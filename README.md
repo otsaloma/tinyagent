@@ -4,16 +4,27 @@ Tiny Agent
 This is a very minimal AI Agent implementation as a Python package and
 command line interface.
 
+## Prerequisites
+
 You need an OpenAI API key from <https://platform.openai.com/api-keys>.
 Define that API key as environment variable `OPENAI_API_KEY`.
 
-Try the command line interface:
+Install uv required by the Python environment, see
+<https://docs.astral.sh/uv/getting-started/installation/>.
+
+Install Playwright required by the fetch tool.
 
 ```bash
-uv run tinyagent/agent.py
+uv run playwright install
 ```
 
-Use the package in code:
+## Command Line Interface
+
+```bash
+PYTHONPATH=. uv run tinyagent/agent.py
+```
+
+## Python Package
 
 ```python
 TODO
