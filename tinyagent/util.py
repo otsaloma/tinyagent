@@ -13,7 +13,7 @@ def clean_html(html: str) -> str:
 def fetch_html(url: str) -> str:
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        browser = p.firefox.launch(headless=True)
+        browser = p.webkit.launch()
         user_agent = p.devices["Desktop Safari"]["user_agent"]
         context = browser.new_context(user_agent=user_agent)
         page = context.new_page()
