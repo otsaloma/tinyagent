@@ -1,27 +1,16 @@
 # -*- coding: utf-8 -*-
 
+import tinyagent as a
+
 from pydantic import Field
-from tinyagent import Signature
-from tinyagent import Tool
-from tinyagent import util
 
 def fetch(url: str) -> str:
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as p:
-        browser = p.webkit.launch()
-        user_agent = p.devices["Desktop Safari"]["user_agent"]
-        context = browser.new_context(user_agent=user_agent)
-        page = context.new_page()
-        page.goto(url)
-        html = page.content()
-        html = util.clean_html(html)
-        browser.close()
-        return html
+    return a.util.fetch_html_as_markdown(url)
 
-class WebFetchSignature(Signature):
+class WebFetchSignature(a.Signature):
     url: str = Field(..., description="URL of web page to fetch")
 
-class WebFetchTool(Tool):
+class WebFetchTool(a.Tool):
     name = "Fetch web page"
     description = "Use a headless browser to fetch the content of a web page"
     function = fetch
