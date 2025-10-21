@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import tinyagent as a
-
 from pydantic import Field
+from tinyagent import Signature
+from tinyagent import Tool
+from tinyagent import util
 
 def fetch(url: str) -> str:
-    return a.util.fetch_html_as_markdown(url)
+    return util.fetch_html_as_markdown(url)
 
-class WebFetchSignature(a.Signature):
+class WebFetchSignature(Signature):
     url: str = Field(..., description="URL of web page to fetch")
 
-class WebFetchTool(a.Tool):
+class WebFetchTool(Tool):
     name = "Fetch web page"
     description = "Use a headless browser to fetch the content of a web page"
     function = fetch
@@ -19,5 +20,6 @@ class WebFetchTool(a.Tool):
 if __name__ == "__main__":
     tool = WebFetchTool()
     print(tool.schema_json)
-    html = tool.call(url="https://example.com/")
-    print(html)
+    text = tool.call(url="https://example.com/")
+    print(text)
+    print(len(text))

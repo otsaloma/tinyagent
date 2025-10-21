@@ -27,4 +27,9 @@ def fetch_html_as_markdown(url: str) -> str:
     html = fetch_html(url)
     generator = DefaultMarkdownGenerator()
     result = generator.generate_markdown(html)
-    return result.raw_markdown
+    return result.raw_markdown.strip()
+
+if __name__ == "__main__":
+    text = fetch_html_as_markdown("https://example.com/")
+    print(text)
+    print(len(text))
