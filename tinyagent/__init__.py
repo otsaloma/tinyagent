@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from tinyagent import util # noqa
-from tinyagent.tool import Signature # noqa
-from tinyagent.tool import Tool # noqa
-from tinyagent.agent import Agent # noqa
+from tinyagent import util
+from tinyagent.tool import Signature
+from tinyagent.tool import Tool
+from tinyagent.agent import Agent
+from tinyagent import cli

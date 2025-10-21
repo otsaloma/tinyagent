@@ -1,47 +1,28 @@
 # -*- coding: utf-8 -*-
 
-import functools
 import openai
 
+from collections.abc import Iterable
+
+# TODO: Abstract out the provider.
+# https://github.com/BerriAI/litellm ?
 class Agent:
 
-    def __init__(self, *, model="gpt-5-nano", system_message=None, tools=()):
+    def __init__(self, *,
+                 model: str = "gpt-5-nano",
+                 system_message: str = "",
+                 tools: Iterable = ()):
+
         self._client = openai.OpenAI()
         self._messages = []
         self._model = model
         self._system_message = system_message or "You are a helpful assistant."
         self._tools = list(tools)
 
-    def _append_message(self, role, content):
+    def _append_message(self, role: str, content: str) -> None:
         self._messages.append({"role": role, "content": content})
 
-    @functools.cache
-    def _setup_readline(self):
-        import atexit
-        import readline
-        from pathlib import Path
-        histfile = Path.cwd() / ".history"
-        if histfile.exists():
-            readline.read_history_file(histfile)
-        atexit.register(readline.write_history_file, histfile)
-        readline.set_history_length(1000)
-
-    def chat(self):
-        self._setup_readline()
-        while True:
-            try:
-                message = input("> ")
-            except (EOFError, KeyboardInterrupt):
-                print("\rBye!")
-                break
-            if message := message.strip():
-                print("Thinking...", end="", flush=True)
-                response = self.query(message)
-                print("\r" + "―" * 72)
-                print(response)
-                print("―" * 72)
-
-    def query(self, message):
+    def query(self, message: str) -> str:
         if not self._messages:
             self._append_message("system", self._system_message)
         self._append_message("user", message)
@@ -52,5 +33,4 @@ class Agent:
         return response.content
 
 if __name__ == "__main__":
-    agent = Agent()
-    agent.chat()
+    print(Agent().query("What is the capital of Vanuatu?"))

@@ -21,7 +21,7 @@ uv run playwright install webkit
 ## Command Line Interface
 
 ```bash
-PYTHONPATH=. uv run tinyagent/agent.py
+PYTHONPATH=. uv run tinyagent/cli.py
 ```
 
 ## Python Package
