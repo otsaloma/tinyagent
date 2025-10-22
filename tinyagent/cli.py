@@ -16,19 +16,17 @@ def _setup_readline() -> None:
     atexit.register(readline.write_history_file, path)
 
 def chat(agent: Agent) -> None:
+    # A verbose agent will print all messages!
     _setup_readline()
     while True:
         try:
             message = input("> ")
         except (EOFError, KeyboardInterrupt):
-            print("\rBye!")
+            print("Bye!")
             break
         if message := message.strip():
-            print("Thinking...", end="", flush=True)
-            response = agent.query(message)
-            print("\r" + "―" * 72)
-            print(response)
-            print("―" * 72)
+            agent.query(message)
 
 if __name__ == "__main__":
-    chat(Agent())
+    from tinyagent import tools
+    chat(Agent(tools=(tools.WebFetchTool(), tools.WebSearchTool()), verbose=True))

@@ -12,7 +12,7 @@ class WebFetchSignature(Signature):
     url: str = Field(..., description="URL of web page to fetch")
 
 class WebFetchTool(Tool):
-    name = "Fetch web page"
+    name = "web_fetch"
     description = "Use a headless browser to fetch the content of a web page"
     function = fetch
     signature = WebFetchSignature

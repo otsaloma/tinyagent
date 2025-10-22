@@ -24,6 +24,8 @@ class Tool:
 
     @property
     def schema(self) -> dict:
+        if not self.name.isidentifier():
+            raise ValueError(f"Bad {self.name=}")
         return {
             "name": self.name,
             "description": self.description,
@@ -31,7 +33,5 @@ class Tool:
         }
 
     @property
-    def schema_json(self, **kwargs) -> str:
-        kwargs.setdefault("ensure_ascii", False)
-        kwargs.setdefault("indent", 2)
-        return json.dumps(self.schema, **kwargs)
+    def schema_json(self) -> str:
+        return json.dumps(self.schema, ensure_ascii=False, indent=2)

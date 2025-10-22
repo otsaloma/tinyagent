@@ -16,7 +16,7 @@ class WebSearchSignature(Signature):
     query: str = Field(..., description="Query to search for")
 
 class WebSearchTool(Tool):
-    name = "Search the internet"
+    name = "web_search"
     description = "Use DuckDuckGo to search the internet for a query"
     function = search
     signature = WebSearchSignature

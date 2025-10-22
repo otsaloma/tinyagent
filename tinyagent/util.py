@@ -29,6 +29,9 @@ def fetch_html_as_markdown(url: str) -> str:
     result = generator.generate_markdown(html)
     return result.raw_markdown.strip()
 
+def print_separator_line() -> None:
+    print("―" * 72)
+
 if __name__ == "__main__":
     text = fetch_html_as_markdown("https://example.com/")
     print(text)
