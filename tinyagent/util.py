@@ -1,6 +1,28 @@
 # -*- coding: utf-8 -*-
 
+import atexit
+import contextlib
+import functools
 import re
+
+@functools.cache
+def get_browser_context():
+    from playwright.sync_api import sync_playwright
+    playwright = sync_playwright().start()
+    browser = playwright.webkit.launch()
+    user_agent = playwright.devices["Desktop Safari"]["user_agent"]
+    context = browser.new_context(user_agent=user_agent)
+    atexit.register(playwright.stop)
+    atexit.register(context.close)
+    return context
+
+@contextlib.contextmanager
+def new_browser_page(url: str):
+    context = get_browser_context()
+    page = context.new_page()
+    page.goto(url)
+    yield page
+    page.close()
 
 def clean_html(html: str) -> str:
     out = []
@@ -11,13 +33,7 @@ def clean_html(html: str) -> str:
     return "\n".join(out)
 
 def fetch_html(url: str) -> str:
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as p:
-        browser = p.webkit.launch()
-        user_agent = p.devices["Desktop Safari"]["user_agent"]
-        context = browser.new_context(user_agent=user_agent)
-        page = context.new_page()
-        page.goto(url)
+    with new_browser_page(url) as page:
         html = page.content()
         html = clean_html(html)
         return html
