@@ -15,7 +15,7 @@ class Tool:
     function: Callable
     signature: type[Signature]
 
-    def call(self, **kwargs):
+    def call(self, **kwargs) -> str:
         # When assigned, self.function becomes a bound method.
         # Extract the plain function to avoid calling with self.
         function = self.function.__func__
