@@ -5,8 +5,16 @@ import contextlib
 import functools
 import re
 
+MARKDOWN_TEMPLATE = """
+---
+title: {title}
+url: {url}
+---
+{md}
+""".strip()
+
 @functools.cache
-def get_browser_context():
+def _get_browser_context():
     from playwright.sync_api import sync_playwright
     playwright = sync_playwright().start()
     browser = playwright.webkit.launch()
@@ -17,8 +25,8 @@ def get_browser_context():
     return context
 
 @contextlib.contextmanager
-def new_browser_page(url: str):
-    context = get_browser_context()
+def _new_browser_page(url: str):
+    context = _get_browser_context()
     page = context.new_page()
     page.goto(url)
     yield page
@@ -32,18 +40,19 @@ def clean_html(html: str) -> str:
             out.append(line)
     return "\n".join(out)
 
-def fetch_html(url: str) -> str:
-    with new_browser_page(url) as page:
+def _fetch_page(url: str) -> (str, str):
+    with _new_browser_page(url) as page:
         html = page.content()
         html = clean_html(html)
-        return html
+        return page.title(), html
 
 def fetch_html_as_markdown(url: str) -> str:
     from crawl4ai import DefaultMarkdownGenerator
-    html = fetch_html(url)
+    title, html = _fetch_page(url)
     generator = DefaultMarkdownGenerator()
     result = generator.generate_markdown(html)
-    return result.raw_markdown.strip()
+    md = result.raw_markdown.strip()
+    return MARKDOWN_TEMPLATE.format(**locals())
 
 def print_separator_line() -> None:
     print("―" * 72)
