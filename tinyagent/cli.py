@@ -16,7 +16,9 @@ def _setup_readline() -> None:
     atexit.register(readline.write_history_file, path)
 
 def chat(agent: Agent) -> None:
-    # A verbose agent will print all messages!
+    # A verbose agent will print all messages,
+    # no need to print separately here!
+    agent._verbose = True
     _setup_readline()
     while True:
         try:
@@ -29,4 +31,4 @@ def chat(agent: Agent) -> None:
 
 if __name__ == "__main__":
     from tinyagent import tools
-    chat(Agent(tools=(tools.WebFetchTool(), tools.WebSearchTool()), verbose=True))
+    chat(Agent(tools=[tools.WebFetchTool(), tools.WebSearchTool()]))
