@@ -27,5 +27,10 @@ PYTHONPATH=. uv run tinyagent/cli.py
 ## Python Package
 
 ```python
-TODO
+from tinyagent import Agent
+from tinyagent import tools
+
+agent = Agent(tools=[tools.WebFetchTool(), tools.WebSearchTool()], verbose=True)
+response = agent.query("What is the weather currently like in Helsinki?")
+print(response)
 ```
