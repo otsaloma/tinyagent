@@ -16,3 +16,7 @@ dev = [
     "flake8>=7.3.0",
     "mypy>=1.18.2",
 ]
+
+[[tool.mypy.overrides]]
+module = ["crawl4ai.*"]
+ignore_missing_imports = true

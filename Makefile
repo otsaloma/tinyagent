@@ -1,7 +1,8 @@
 # -*- coding: utf-8-unix -*-
 
 check:
-	flake8 .
+	uv run flake8 .
+	uv run mypy .
 
 clean:
 	rm -rf __pycache__
