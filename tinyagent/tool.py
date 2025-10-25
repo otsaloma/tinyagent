@@ -18,7 +18,7 @@ class Tool:
     def call(self, **kwargs) -> str:
         # When assigned, self.function becomes a bound method.
         # Extract the plain function to avoid calling with self.
-        function = self.function.__func__
+        function = self.function.__func__ # type: ignore
         validated = self.signature(**kwargs)
         return function(**validated.model_dump())
 

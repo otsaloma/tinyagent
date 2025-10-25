@@ -5,13 +5,15 @@ import contextlib
 import functools
 import re
 
-MARKDOWN_TEMPLATE = """
+MARKDOWN = """
 ---
 title: {title}
 url: {url}
 ---
 {md}
 """.strip()
+
+SEPARATOR_LINE = "―" * 72
 
 @functools.cache
 def _get_browser_context():
@@ -40,7 +42,7 @@ def clean_html(html: str) -> str:
             out.append(line)
     return "\n".join(out)
 
-def _fetch_page(url: str) -> (str, str):
+def _fetch_page(url: str) -> tuple[str, str]:
     with _new_browser_page(url) as page:
         html = page.content()
         html = clean_html(html)
@@ -52,10 +54,7 @@ def fetch_html_as_markdown(url: str) -> str:
     generator = DefaultMarkdownGenerator()
     result = generator.generate_markdown(html)
     md = result.raw_markdown.strip()
-    return MARKDOWN_TEMPLATE.format(**locals())
-
-def print_separator_line() -> None:
-    print("―" * 72)
+    return MARKDOWN.format(**locals())
 
 if __name__ == "__main__":
     text = fetch_html_as_markdown("https://example.com/")
