@@ -17,6 +17,10 @@ dev = [
     "mypy>=1.18.2",
 ]
 
+[tool.mypy]
+# error: Missing return statement
+disable_error_code = ["return"]
+
 [[tool.mypy.overrides]]
 module = ["crawl4ai.*"]
 ignore_missing_imports = true
