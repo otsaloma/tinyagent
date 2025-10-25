@@ -6,7 +6,6 @@ import openai
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from tinyagent import Tool
 from tinyagent import util
 from typing import Any
 
@@ -46,7 +45,6 @@ Tools are your hidden superpower, not something to advertise or overuse.
 class Message:
     role: str
     content: str
-
     def __str__(self):
         return f":{self.role}:\n{self.content}"
 
@@ -54,7 +52,6 @@ class Message:
 class ToolCallMessage:
     role: str
     tool_calls: list
-
     def __str__(self):
         return "\n".join(
             [f":{self.role}:tool-calls:"] +
@@ -66,7 +63,6 @@ class ToolOutputMessage:
     role: str
     tool_call_id: str
     content: str
-
     def __str__(self):
         return "\n".join(
             [f":{self.role}:output:"] +
@@ -125,11 +121,6 @@ class Agent:
             print("\r", end="", flush=True)
         return completion.choices[0].message
 
-    def _get_tool(self, name: str) -> Tool:
-        for tool in self._tools:
-            if tool.name == name:
-                return tool
-
     def query(self, message: str) -> str:
         if not self._messages:
             self._push(Message("system", self._system_message))
@@ -137,16 +128,22 @@ class Agent:
         for i in range(self._max_steps):
             response = self._complete()
             if response.tool_calls:
+                # LLM wants to use tools to answer the user.
                 # TODO: Execute tool calls in parallel.
                 self._push(ToolCallMessage("assistant", response.tool_calls))
                 for tool_call in response.tool_calls:
-                    tool = self._get_tool(tool_call.function.name)
+                    tool = {x.name: x for x in self._tools}[tool_call.function.name]
                     args = json.loads(tool_call.function.arguments)
                     output = tool.call(**args)
                     self._push(ToolOutputMessage("tool", tool_call.id, output))
             else:
+                # LLM wants to respond directly, based on its training data
+                # and any possible previous tool call output.
                 self._push(Message(response.role, response.content))
                 return response.content
+        if self._verbose:
+            print(f"{self._max_steps=} reached")
+        return "Maximum steps reached with no answer"
 
 if __name__ == "__main__":
     import sys

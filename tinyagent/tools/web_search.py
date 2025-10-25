@@ -7,6 +7,9 @@ from tinyagent import Signature
 from tinyagent import Tool
 from tinyagent import util
 
+# TODO: Add kl region parameter? Where?
+# https://duckduckgo.com/duckduckgo-help-pages/settings/params
+
 def search(query: str) -> str:
     query = urllib.parse.quote_plus(query)
     url = f"https://html.duckduckgo.com/html/?q={query}"

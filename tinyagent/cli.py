@@ -24,7 +24,7 @@ def chat(agent: Agent) -> None:
         try:
             message = input("> ")
         except (EOFError, KeyboardInterrupt):
-            print("Bye!")
+            print("\rBye!")
             break
         if message := message.strip():
             agent.query(message)
