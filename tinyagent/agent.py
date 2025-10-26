@@ -128,6 +128,7 @@ class Agent:
             self._push(Message("system", self._system_message))
         self._push(Message("user", self._format_user_message(message)))
         for i in range(self._max_steps):
+            print(f":step:{i+1}/{self._max_steps}:")
             response = self._complete()
             if response.tool_calls:
                 # LLM wants to use tools to answer the user.
