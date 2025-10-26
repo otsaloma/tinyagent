@@ -15,6 +15,7 @@ url: {url}
 
 SEPARATOR_LINE = "―" * 72
 
+# XXX: Single-instance might not be OK for parallel use!
 @functools.cache
 def _get_browser_context():
     from playwright.sync_api import sync_playwright

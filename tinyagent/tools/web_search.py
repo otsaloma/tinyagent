@@ -7,7 +7,7 @@ from tinyagent import Signature
 from tinyagent import Tool
 from tinyagent import util
 
-# TODO: Add kl region parameter? Where?
+# TODO: Add kl region parameter?
 # https://duckduckgo.com/duckduckgo-help-pages/settings/params
 
 def search(query: str) -> str:

@@ -22,7 +22,7 @@ Install a Playwright browser required by the web tools.
 uv run playwright install webkit
 ```
 
-## Command Line Interface
+## Command Line Chat Interface
 
 ```bash
 PYTHONPATH=. uv run tinyagent/cli.py
