@@ -34,3 +34,19 @@ from tinyagent import tools
 agent = Agent(tools=[tools.WebFetchTool(), tools.WebSearchTool()], verbose=True)
 response = agent.query("What is the weather currently like in Helsinki?")
 ```
+
+## Testimonials
+
+**“Not fundamentally broken”** — Claude Code
+
+> Verdict: Maybe, for simple cases
+>
+> - ✅ Internal chatbot with 3-5 custom tools, <10 turn conversations
+> - ✅ Batch processing where latency doesn't matter
+> - ❌ High-volume customer-facing service
+> - ❌ Long-running conversational agents
+> - ❌ Cost-sensitive environments without guardrails
+>
+> The architecture is sound - it's missing operational features, not
+> fundamentally broken. Add parallel execution, observability, and
+> resource limits, and it could absolutely work.
