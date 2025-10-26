@@ -1,8 +1,11 @@
 Tiny Agent
 ==========
 
-This is a very minimal AI Agent implementation as a Python package and
-command line interface.
+This is a minimal AI Agent implementation as a Python package and
+command line interface. At around 300 lines, the code should be easy to
+read and extend. Two tools are included: web search and web fetch. Thus,
+the agentic capabilities can be easily tested by questions about current
+or upcoming events, weather etc. Uses gpt-5-mini by default.
 
 ## Prerequisites
 
