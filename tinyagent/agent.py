@@ -74,7 +74,7 @@ class ToolOutputMessage:
 class Agent:
 
     def __init__(self, *,
-                 model: str = "gpt-5-nano",
+                 model: str = "gpt-5-mini",
                  system_message: str = SYSTEM_MESSAGE,
                  tools: Iterable = (),
                  max_steps: int = 10,
