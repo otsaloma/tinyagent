@@ -6,6 +6,7 @@ import readline
 
 from pathlib import Path
 from tinyagent import Agent
+from tinyagent import util
 
 @functools.cache
 def _setup_readline() -> None:
@@ -20,6 +21,7 @@ def chat(agent: Agent) -> None:
     # no need to print separately here!
     agent._verbose = True
     _setup_readline()
+    print("How can I help you today?")
     while True:
         try:
             message = input("> ")
@@ -27,6 +29,7 @@ def chat(agent: Agent) -> None:
             print("\rBye!")
             break
         if message := message.strip():
+            print(util.SEPARATOR_LINE)
             agent.query(message)
 
 if __name__ == "__main__":

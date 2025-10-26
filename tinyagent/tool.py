@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import traceback
 
 from pydantic import BaseModel
 from typing import Callable
@@ -22,8 +23,16 @@ class Tool:
         validated = self.signature(**kwargs)
         return function(**validated.model_dump())
 
+    def call_or_traceback(self, **kwargs) -> str:
+        try:
+            return self.call(**kwargs)
+        except Exception:
+            return traceback.format_exc(limit=10)
+
     @property
     def schema(self) -> dict:
+        # Follow the OpenAI function/tool JSON schema.
+        # https://platform.openai.com/docs/guides/function-calling
         if not self.name.isidentifier():
             raise ValueError(f"Bad {self.name=}")
         return {

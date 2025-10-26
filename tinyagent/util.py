@@ -34,18 +34,14 @@ def _new_browser_page(url: str):
     yield page
     page.close()
 
-def clean_html(html: str) -> str:
-    out = []
-    for line in html.splitlines():
-        line = re.sub(r"<!--.*?-->", "", line)
-        if line := line.strip():
-            out.append(line)
-    return "\n".join(out)
+def _clean_html(html: str) -> str:
+    html = re.sub(r"<!--.*?-->", "", html)
+    return "\n".join(x for x in html.splitlines() if x.strip())
 
 def _fetch_page(url: str) -> tuple[str, str]:
     with _new_browser_page(url) as page:
         html = page.content()
-        html = clean_html(html)
+        html = _clean_html(html)
         return page.title(), html
 
 def fetch_html_as_markdown(url: str) -> str:

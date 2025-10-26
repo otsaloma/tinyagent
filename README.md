@@ -10,9 +10,10 @@ You need an OpenAI API key from <https://platform.openai.com/api-keys>.
 Define that API key as environment variable `OPENAI_API_KEY`.
 
 Install uv required by the Python environment, see
-<https://docs.astral.sh/uv/getting-started/installation/>.
+<https://docs.astral.sh/uv/getting-started/installation/>. A virtualenv
+will be created implicitly by the below `uv run` commands.
 
-Install Playwright required by the web tools.
+Install a Playwright browser required by the web tools.
 
 ```bash
 uv run playwright install webkit

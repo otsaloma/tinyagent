@@ -106,6 +106,8 @@ class Agent:
 
     @property
     def _tool_schemas(self) -> list:
+        # Follow the OpenAI function/tool JSON schema.
+        # https://platform.openai.com/docs/guides/function-calling
         return [{"type": "function", "function": tool.schema}
                 for tool in self._tools]
 
@@ -129,21 +131,23 @@ class Agent:
             response = self._complete()
             if response.tool_calls:
                 # LLM wants to use tools to answer the user.
+                # Execute all tool calls and append output to messages.
                 # TODO: Execute tool calls in parallel.
                 self._push(ToolCallMessage("assistant", response.tool_calls))
                 for tool_call in response.tool_calls:
                     tool = {x.name: x for x in self._tools}[tool_call.function.name]
                     args = json.loads(tool_call.function.arguments)
-                    output = tool.call(**args)
+                    output = tool.call_or_traceback(**args)
                     self._push(ToolOutputMessage("tool", tool_call.id, output))
             else:
-                # LLM wants to respond directly, based on its training data
-                # and any possible previous tool call output.
+                # LLM can answer based on general knowledge from its training
+                # data and previous messages, including output from tool calls.
+                # Relay that as-is to the user.
                 self._push(Message(response.role, response.content))
                 return response.content
-        if self._verbose:
-            print(f"{self._max_steps=} reached")
-        return "Maximum steps reached with no answer"
+        content = f"Maximum steps ({self._max_steps}) reached with no answer :-("
+        self._push(Message("assistant", content))
+        return content
 
 if __name__ == "__main__":
     import sys
