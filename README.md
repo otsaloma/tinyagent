@@ -25,7 +25,7 @@ uv run playwright install webkit
 ## Command Line Chat Interface
 
 ```bash
-PYTHONPATH=. uv run tinyagent/cli.py
+./chat.sh
 ```
 
 ## Python Package
