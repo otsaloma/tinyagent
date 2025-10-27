@@ -64,9 +64,10 @@ class ToolOutputMessage:
     tool_call_id: str
     content: str
     def __str__(self):
+        max_lines = 1000 if self.content.startswith("Traceback") else 20
         return "\n".join(
             [f":{self.role}:output:"] +
-            self.content.splitlines()[:20] +
+            self.content.splitlines()[:max_lines] +
             [f"... {len(self.content)} characters total"])
 
 # TODO: Abstract out the provider.
