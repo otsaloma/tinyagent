@@ -5,7 +5,10 @@ import json
 import openai
 
 from collections.abc import Iterable
+from concurrent.futures import as_completed
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
+from tinyagent import Tool
 from tinyagent import util
 from typing import Any
 
@@ -125,6 +128,13 @@ class Agent:
             print("\r", end="", flush=True)
         return completion.choices[0].message
 
+    @staticmethod
+    def _execute_tool_call(tools: list[Tool], tool_call: Any) -> ToolOutputMessage:
+        tool = {x.name: x for x in tools}[tool_call.function.name]
+        args = json.loads(tool_call.function.arguments)
+        output = tool.call_or_traceback(**args)
+        return ToolOutputMessage("tool", tool_call.id, output)
+
     def query(self, message: str) -> str:
         if not self._messages:
             self._push(Message("system", self._system_message))
@@ -136,13 +146,12 @@ class Agent:
             if response.tool_calls:
                 # LLM wants to use tools to answer the user.
                 # Execute all tool calls and append output to messages.
-                # TODO: Execute tool calls in parallel.
                 self._push(ToolCallMessage("assistant", response.tool_calls))
-                for tool_call in response.tool_calls:
-                    tool = {x.name: x for x in self._tools}[tool_call.function.name]
-                    args = json.loads(tool_call.function.arguments)
-                    output = tool.call_or_traceback(**args)
-                    self._push(ToolOutputMessage("tool", tool_call.id, output))
+                with ProcessPoolExecutor() as executor:
+                    for future in as_completed(
+                            executor.submit(self._execute_tool_call, self._tools, tool_call)
+                            for tool_call in response.tool_calls):
+                        self._push(future.result())
             else:
                 # LLM can answer based on general knowledge from its training
                 # data and previous messages, including output from tool calls.
