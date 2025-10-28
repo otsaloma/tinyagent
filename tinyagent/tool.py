@@ -3,8 +3,8 @@
 import json
 import traceback
 
+from collections.abc import Callable
 from pydantic import BaseModel
-from typing import Callable
 
 class Signature(BaseModel):
     pass
