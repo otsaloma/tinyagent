@@ -23,7 +23,7 @@ def _fetch_page(url: str) -> tuple[str, str]:
         user_agent = playwright.devices["Desktop Safari"]["user_agent"]
         context = browser.new_context(user_agent=user_agent)
         page = context.new_page()
-        page.goto(url)
+        page.goto(url, timeout=10_000)
         title = page.title()
         html = page.content()
         html = _clean_html(html)

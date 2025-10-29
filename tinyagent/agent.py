@@ -91,7 +91,7 @@ class Agent:
                  max_steps: int = 10,
                  verbose: bool = False):
 
-        self._client = openai.OpenAI()
+        self._client = openai.OpenAI(timeout=60)
         self._max_steps = max_steps
         self._messages = [] # type: ignore[var-annotated]
         self._model = model
