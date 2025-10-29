@@ -2,15 +2,10 @@
 
 import dataclasses
 import json
+import multiprocessing
 import openai
 
-from collections.abc import Callable
 from collections.abc import Iterable
-from collections.abc import Sequence
-from concurrent.futures import as_completed
-from concurrent.futures import Executor
-from concurrent.futures import Future
-from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from tinyagent import Tool
 from tinyagent import util
@@ -47,18 +42,6 @@ Available tools:
 Respond directly or use one of the tools.
 Tools are your hidden superpower, not something to advertise or overuse.
 """.strip()
-
-class MainExecutor(Executor):
-    def submit(self, fn: Callable, /, *args, **kwargs):
-        result = fn(*args, **kwargs)
-        future: Future = Future()
-        future.set_result(result)
-        return future
-
-def get_executor(jobs: Sequence):
-    # MainExecutor can make use of memoization
-    # and thus be faster for single jobs.
-    return ProcessPoolExecutor if len(jobs) > 1 else MainExecutor
 
 @dataclass
 class Message:
@@ -163,11 +146,10 @@ class Agent:
                 # LLM wants to use tools to answer the user.
                 # Execute tool calls in parallel and append output to messages.
                 self._push(ToolCallMessage("assistant", response.tool_calls))
-                with get_executor(response.tool_calls)() as executor:
-                    for future in as_completed(
-                            executor.submit(self._execute_tool_call, self._tools, tool_call)
-                            for tool_call in response.tool_calls):
-                        self._push(future.result())
+                with multiprocessing.Pool() as pool:
+                    args = [(self._tools, x) for x in response.tool_calls]
+                    for result in pool.starmap(self._execute_tool_call, args):
+                        self._push(result)
             else:
                 # LLM can answer based on general knowledge from its training
                 # data and previous messages, including output from tool calls.
