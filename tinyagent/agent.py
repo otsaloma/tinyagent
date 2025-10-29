@@ -2,10 +2,12 @@
 
 import dataclasses
 import json
+import multiprocessing
 import openai
 
 from collections.abc import Iterable
 from dataclasses import dataclass
+from tinyagent import Tool
 from tinyagent import util
 from typing import Any
 
@@ -125,6 +127,13 @@ class Agent:
             print("\r", end="", flush=True)
         return completion.choices[0].message
 
+    @staticmethod
+    def _execute_tool_call(tools: list[Tool], tool_call: Any) -> ToolOutputMessage:
+        tool = {x.name: x for x in tools}[tool_call.function.name]
+        args = json.loads(tool_call.function.arguments)
+        output = tool.call_or_traceback(**args)
+        return ToolOutputMessage("tool", tool_call.id, output)
+
     def query(self, message: str) -> str:
         if not self._messages:
             self._push(Message("system", self._system_message))
@@ -135,14 +144,12 @@ class Agent:
             response = self._complete()
             if response.tool_calls:
                 # LLM wants to use tools to answer the user.
-                # Execute all tool calls and append output to messages.
-                # TODO: Execute tool calls in parallel.
+                # Execute tool calls in parallel and append output to messages.
                 self._push(ToolCallMessage("assistant", response.tool_calls))
-                for tool_call in response.tool_calls:
-                    tool = {x.name: x for x in self._tools}[tool_call.function.name]
-                    args = json.loads(tool_call.function.arguments)
-                    output = tool.call_or_traceback(**args)
-                    self._push(ToolOutputMessage("tool", tool_call.id, output))
+                with multiprocessing.Pool() as pool:
+                    args = [(self._tools, x) for x in response.tool_calls]
+                    for result in pool.starmap(self._execute_tool_call, args):
+                        self._push(result)
             else:
                 # LLM can answer based on general knowledge from its training
                 # data and previous messages, including output from tool calls.

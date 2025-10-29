@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import atexit
-import contextlib
-import functools
 import re
 
 MARKDOWN = """
@@ -15,35 +12,23 @@ url: {url}
 
 SEPARATOR_LINE = "―" * 72
 
-# XXX: Single-instance might not be OK for parallel use!
-@functools.cache
-def _get_browser_context():
-    from playwright.sync_api import sync_playwright
-    playwright = sync_playwright().start()
-    browser = playwright.webkit.launch()
-    user_agent = playwright.devices["Desktop Safari"]["user_agent"]
-    context = browser.new_context(user_agent=user_agent)
-    atexit.register(playwright.stop)
-    atexit.register(context.close)
-    return context
-
-@contextlib.contextmanager
-def _new_browser_page(url: str):
-    context = _get_browser_context()
-    page = context.new_page()
-    page.goto(url)
-    yield page
-    page.close()
-
 def _clean_html(html: str) -> str:
     html = re.sub(r"<!--.*?-->", "", html)
     return "\n".join(x for x in html.splitlines() if x.strip())
 
 def _fetch_page(url: str) -> tuple[str, str]:
-    with _new_browser_page(url) as page:
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as playwright:
+        browser = playwright.webkit.launch()
+        user_agent = playwright.devices["Desktop Safari"]["user_agent"]
+        context = browser.new_context(user_agent=user_agent)
+        page = context.new_page()
+        page.goto(url)
+        title = page.title()
         html = page.content()
         html = _clean_html(html)
-        return page.title(), html
+        browser.close()
+        return title, html
 
 def fetch_html_as_markdown(url: str) -> str:
     from crawl4ai import DefaultMarkdownGenerator
