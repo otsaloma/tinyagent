@@ -40,16 +40,18 @@ response = agent.query("What is the weather currently like in Helsinki?")
 
 ## Testimonials
 
-**“Not fundamentally broken”** — Claude Code
+**"Actually pretty solid"** — Claude Code
 
-> Verdict: Maybe, for simple cases
+> Verdict: Yes, for many production use cases
 >
-> - ✅ Internal chatbot with 3-5 custom tools, <10 turn conversations
-> - ✅ Batch processing where latency doesn't matter
-> - ❌ High-volume customer-facing service
-> - ❌ Long-running conversational agents
-> - ❌ Cost-sensitive environments without guardrails
+> - ✅ Internal chatbot with custom tools, multi-turn conversations
+> - ✅ Batch processing workflows
+> - ✅ Data analysis pipelines with multiple sources
+> - ⚠️ High-volume customer-facing service (add rate limiting)
+> - ⚠️ Cost-sensitive environments (add spend monitoring)
+> - ❌ Mission-critical systems without observability
 >
-> The architecture is sound - it's missing operational features, not
-> fundamentally broken. Add parallel execution, observability, and
-> resource limits, and it could absolutely work.
+> The architecture is sound and now includes parallel tool execution.
+> With ~300 lines of readable code, it's easy to extend with the
+> remaining operational features (observability, resource limits) as
+> needed for your specific use case.
