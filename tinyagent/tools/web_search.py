@@ -7,12 +7,10 @@ from tinyagent import Signature
 from tinyagent import Tool
 from tinyagent import util
 
-# TODO: Add kl region parameter?
-# https://duckduckgo.com/duckduckgo-help-pages/settings/params
-
-def search(query: str) -> str:
+def search(query: str, region: str|None = None) -> str:
     query = urllib.parse.quote_plus(query)
     url = f"https://html.duckduckgo.com/html/?q={query}"
+    url += f"&kl={region}" if region else ""
     return util.fetch_html_as_markdown(url)
 
 class WebSearchSignature(Signature):
@@ -24,8 +22,14 @@ class WebSearchTool(Tool):
     function = search
     signature = WebSearchSignature
 
+    def __init__(self, *, region: str|None = None):
+        # For valid region values, see 'kl' in the documentation.
+        # https://duckduckgo.com/duckduckgo-help-pages/settings/params
+        super().__init__()
+        self.extra_kwargs["region"] = region
+
 if __name__ == "__main__":
-    tool = WebSearchTool()
+    tool = WebSearchTool(region="fr-fr")
     print(tool.schema_json)
     text = tool.call(query="Mont Analogue")
     print(text)
