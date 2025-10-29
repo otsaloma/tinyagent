@@ -16,12 +16,17 @@ class Tool:
     function: Callable
     signature: type[Signature]
 
+    def __init__(self):
+        self.extra_kwargs = {}
+
     def call(self, **kwargs) -> str:
         # When assigned, self.function becomes a bound method.
         # Extract the plain function to avoid calling with self.
         function = self.function.__func__ # type: ignore
         validated = self.signature(**kwargs)
-        return function(**validated.model_dump())
+        validated_kwargs = validated.model_dump()
+        kwargs = {**self.extra_kwargs, **validated_kwargs}
+        return function(**kwargs)
 
     def call_or_traceback(self, **kwargs) -> str:
         try:
