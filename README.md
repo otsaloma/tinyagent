@@ -5,16 +5,13 @@ This is a minimal AI Agent implementation as a Python package and
 command line interface. At around 300 lines, the code should be easy to
 read and extend. Two tools are included: web search and web fetch. Thus,
 the agentic capabilities can be easily tested by questions about current
-or upcoming events, weather etc. Uses gpt-5-mini by default.
+or upcoming events, weather etc.
 
 ## Prerequisites
 
-You need an OpenAI API key from <https://platform.openai.com/api-keys>.
-Define that API key as environment variable `OPENAI_API_KEY`.
-
 Install uv required by the Python environment, see
 <https://docs.astral.sh/uv/getting-started/installation/>. A virtualenv
-will be created implicitly by the below `uv run` commands.
+will be created implicitly by the below commands.
 
 Install a Playwright browser required by the web tools.
 
@@ -25,8 +22,31 @@ uv run playwright install webkit
 ## Command Line Chat Interface
 
 ```bash
-./chat.sh
+./chat.sh [MODEL]
 ```
+
+By default Tiny Agent uses OpenAI's gpt-5-mini, but multiple providers
+and models are supported. You can specify e.g. one of the following as
+the optional MODEL argument above.
+
+```
+openai/gpt-5-mini
+anthropic/claude-sonnet-4-5
+xai/grok-4-fast
+azure/...
+openrouter/...
+```
+
+Tiny Agent uses LiteLLM and supports any provider that is listed as
+supported by LiteLLM and supporting the `tools` argument for
+completions, see below links for details.
+
+* https://docs.litellm.ai/docs/providers
+* https://docs.litellm.ai/docs/completion/input#translated-openai-params
+
+You'll need your own API key. For example with OpenAI, you can get it
+from from <https://platform.openai.com/api-keys> and define as
+environment variable `OPENAI_API_KEY`.
 
 ## Python Package
 
@@ -34,7 +54,8 @@ uv run playwright install webkit
 from tinyagent import Agent
 from tinyagent import tools
 
-agent = Agent(tools=[tools.WebFetchTool(), tools.WebSearchTool()], verbose=True)
+use_tools = [tools.WebFetchTool(), tools.WebSearchTool()]
+agent = Agent(model="openai/gpt-5-mini", tools=use_tools, verbose=True)
 response = agent.query("What is the weather currently like in Helsinki?")
 ```
 

@@ -33,5 +33,8 @@ def chat(agent: Agent) -> None:
             agent.query(message)
 
 if __name__ == "__main__":
+    import sys
     from tinyagent import tools
-    chat(Agent(tools=[tools.WebFetchTool(), tools.WebSearchTool()]))
+    use_tools = [tools.WebFetchTool(), tools.WebSearchTool()]
+    kwargs = {"model": sys.argv[1]} if sys.argv[1:] else {}
+    chat(Agent(tools=use_tools, verbose=True, **kwargs)) # type: ignore[arg-type]

@@ -3660,7 +3660,7 @@ version = "0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "crawl4ai" },
-    { name = "openai" },
+    { name = "litellm" },
     { name = "playwright" },
     { name = "pydantic" },
 ]
@@ -3674,7 +3674,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "crawl4ai", specifier = ">=0.7.4" },
-    { name = "openai", specifier = ">=2.5.0" },
+    { name = "litellm", specifier = ">=1.78.5" },
     { name = "playwright", specifier = ">=1.55.0" },
     { name = "pydantic", specifier = ">=2.12.3" },
 ]

@@ -2,8 +2,8 @@
 
 import dataclasses
 import json
+import litellm
 import multiprocessing
-import openai
 
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -80,18 +80,15 @@ def _execute_tool_call(tools: list[Tool], tool_call: Any) -> ToolOutputMessage:
     output = tool.call_or_traceback(**args)
     return ToolOutputMessage("tool", tool_call.id, output)
 
-# TODO: Abstract out the provider.
-# https://github.com/BerriAI/litellm ?
 class Agent:
 
     def __init__(self, *,
-                 model: str = "gpt-5-mini",
+                 model: str = "openai/gpt-5-mini",
                  system_message: str = SYSTEM_MESSAGE,
                  tools: Iterable = (),
                  max_steps: int = 10,
                  verbose: bool = False):
 
-        self._client = openai.OpenAI(timeout=60)
         self._max_steps = max_steps
         self._messages = [] # type: ignore[var-annotated]
         self._model = model
@@ -99,6 +96,7 @@ class Agent:
         self._tools = list(tools)
         self._verbose = verbose
         if self._verbose:
+            print(f"Using {self._model}")
             print(":tools:")
             for tool in self._tools:
                 print(tool.schema_json)
@@ -126,10 +124,11 @@ class Agent:
     def _complete(self) -> Any:
         if self._verbose:
             print("Thinking...", end="", flush=True)
-        completion = self._client.chat.completions.create(
+        completion = litellm.completion(
             model=self._model,
             messages=self._messages,
             tools=self._tool_schemas,
+            timeout=60,
         )
         if self._verbose:
             print("\r", end="", flush=True)
