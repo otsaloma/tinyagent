@@ -54,9 +54,13 @@ environment variable `OPENAI_API_KEY`.
 from tinyagent import Agent
 from tinyagent import tools
 
-use_tools = [tools.WebFetchTool(), tools.WebSearchTool()]
-agent = Agent(model="openai/gpt-5-mini", tools=use_tools, verbose=True)
-response = agent.query("What is the weather currently like in Helsinki?")
+def main():
+    use_tools = [tools.WebFetchTool(), tools.WebSearchTool()]
+    agent = Agent(model="openai/gpt-5-mini", tools=use_tools, verbose=True)
+    response = agent.query("What is the weather currently like in Helsinki?")
+
+if __name__ == "__main__":
+    main()
 ```
 
 ## Testimonials
