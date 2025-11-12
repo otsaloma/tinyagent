@@ -5,6 +5,7 @@ description = "A minimal AI agent implementation"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "beautifulsoup4>=4.14.2",
     "crawl4ai>=0.7.4",
     "litellm>=1.78.5",
     "playwright>=1.55.0",

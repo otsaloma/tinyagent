@@ -2,6 +2,7 @@
 
 import urllib.parse
 
+from bs4 import BeautifulSoup
 from pydantic import Field
 from tinyagent import Signature
 from tinyagent import Tool
@@ -11,7 +12,11 @@ def search(query: str, region: str|None = None) -> str:
     query = urllib.parse.quote_plus(query)
     url = f"https://html.duckduckgo.com/html/?q={query}"
     url += f"&kl={region}" if region else ""
-    return util.fetch_html_as_markdown(url)
+    title, html = util.fetch_html(url)
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup.select("#header"): tag.decompose()
+    for tag in soup.select(".result--ad"): tag.decompose()
+    return util.html_to_markdown(url, title, str(soup))
 
 class WebSearchSignature(Signature):
     query: str = Field(..., description="Query to search for")
